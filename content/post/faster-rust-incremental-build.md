@@ -19,6 +19,8 @@ When going full stack we development in rust I'd ideally like sub 1 second build
 
 ### Testing Mac OSX 2019 with rustc v1.56
 
+![About My Mac](/mysetup.png)
+
 I did `clone https://github.com/denoland/deno` and then a `cargo build`. Just for good measure another `cargo clean
 
 1. `git clone https://github.com/denoland/deno`
