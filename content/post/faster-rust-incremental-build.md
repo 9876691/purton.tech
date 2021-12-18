@@ -59,11 +59,7 @@ services:
       dockerfile: Dockerfile
     
     volumes:
-      # https://stackoverflow.com/questions/43844639/how-do-i-add-cached-or-delegated-into-a-docker-compose-yml-volumes-list
       - ..:/vscode:delegated
-      # We need this so docker in docker works 
-      - /var/run/docker.sock:/var/run/docker.sock
-      
       # For building dependencies always use a volume, you get waaaay better performance.
       - target:/vscode/target
 
