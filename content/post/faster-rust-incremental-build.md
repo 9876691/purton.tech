@@ -29,7 +29,7 @@ I did `clone https://github.com/denoland/deno` and then a `cargo build`. Just fo
 
 Now to test incremental build speeds I run `touch src/cache.rs` a file I picked at random. Now another `cargo build` and I'm getting incremental build times of about 1 minute. Which is not great.
 
-```
+```bash
 ianpurton@MacBook-Pro deno % cargo build       
    Compiling deno v1.16.4 (/Users/ianpurton/Documents/Scratch/deno/cli)
     Finished dev [unoptimized + debuginfo] target(s) in 14.75s
@@ -39,7 +39,7 @@ ianpurton@MacBook-Pro deno % cargo build
 
 Shave off another second
 
-```
+```bash
 ianpurton@MacBook-Pro deno % touch cli/cache.rs
 ianpurton@MacBook-Pro deno % cargo build       
    Compiling deno v1.16.4 (/Users/ianpurton/Documents/Scratch/deno/cli)
@@ -49,7 +49,7 @@ ianpurton@MacBook-Pro deno % cargo build
 
 ## How we setup the devcontainer
 
-```
+```yaml
 version: '3.4'
 services:
 
@@ -73,7 +73,7 @@ volumes:
   target:
 ```
 
-```
+```Dockerfile
 FROM ubuntu:20.04 as mold
 
 RUN apt-get update && \
@@ -107,7 +107,7 @@ COPY --chown=vscode --from=mold /mold/mold /usr/bin/mold
 COPY --chown=vscode --from=mold /mold/mold-wrapper.so /usr/bin/mold-wrapper.so
 ```
 
-```
+```json
 {
   "name": "Rust",
 	"dockerComposeFile": [
@@ -141,7 +141,7 @@ COPY --chown=vscode --from=mold /mold/mold-wrapper.so /usr/bin/mold-wrapper.so
 
 ## Docker build time
 
-```
+```bash
 vscode ➜ /vscode (main ✗) $ touch cli/cache.rs 
 vscode ➜ /vscode (main ✗) $ cargo build
    Compiling deno v1.16.4 (/vscode/cli)
@@ -150,7 +150,7 @@ vscode ➜ /vscode (main ✗) $ cargo build
 
 ## Mold
 
-```
+```bash
 vscode ➜ /vscode (main ✗) $ touch cli/cache.rs 
 vscode ➜ /vscode (main ✗) $ mold --run cargo build
    Compiling deno v1.16.4 (/vscode/cli)
