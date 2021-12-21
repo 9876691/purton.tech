@@ -56,6 +56,9 @@ So that's our time to beat. ***13.72s***
 
 We need to move the existing `.devcontainer` setup to be docker compose based. This is so we can add a volume for the target folder which speeds up the build in docker considerably.
 
+
+![Rust running in a VSCode devcontainer](/vscode-devcontainer.png)
+
 ```yaml
 # .devcontainer/docker-compose.yml
 version: '3.4'
