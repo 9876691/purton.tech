@@ -175,5 +175,10 @@ So now we are faster than running a standard OSX rust install.
 
 There we have it, due to the parallel nature of the mold linker we can get fast build times even under a virtualised docker environment.
 
-Mold is building out OSX support so in the future perhaps we get even faster native build times.
+|Environment|Incremental Build Time|
+|-----------|----------------------|
+| Rust on MacOS|13.72s|
+| Rust in Debian VSCode Devcontainer|9.93s|
+
+[Mold](https://github.com/rui314/mold) is building out OSX support so in the future perhaps we get even faster native build times.
 
