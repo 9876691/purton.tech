@@ -185,4 +185,4 @@ There we have it, due to the parallel nature of the mold linker we can get fast 
 
 [Mold](https://github.com/rui314/mold) is building out OSX support so in the future perhaps we get even faster native build times.
 
-Note, deno is a big project. For a typical full stack we project I'm seeing incremental build times between 2 and 3 seconds. Which is not bad or a 2019 Macbook Pro.
+Note, deno is a big project. For a typical full stack web project I'm seeing incremental build times between 2 and 3 seconds.
