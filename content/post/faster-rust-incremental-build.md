@@ -13,11 +13,11 @@ I develop using VSCode devcontainer on a daily basis this means I have my develo
 
 This is great for being able to quickly on board new developers or to bring a new machine quickly up to speed but does sacrifice some performance.
 
-When doing full stack we development in rust I'd ideally like sub 1 second incremental build times. That makes me feel like I'm going fast.
+When doing full stack web development in rust I'd ideally like sub 1 second incremental build times. That makes me feel like I'm going fast.
 
 ## Using the deno project as a benchmark
 
-[Deno](https://deno.land/) is a runtime for Javascript and Typescriot written in rust. It comes with a `.devcontainer` folder containing a Dockerfile which we will enhance for performance.
+[Deno](https://deno.land/) is a runtime for Javascript and Typescript written in rust. It comes with a `.devcontainer` folder containing a Dockerfile which we will enhance for performance.
 
 ### Testing Mac OSX 2019 with rustc v1.56
 
@@ -176,7 +176,7 @@ So now we are faster than running a standard OSX rust install.
 
 ## Conclusion
 
-There we have it, due to the parallel nature of the mold linker we can get fast build times even under a virtualised docker environment.
+There we have it, due to the parallel nature of the mold linker we can get fast incremental build times even under a virtualised docker environment.
 
 |Environment|Incremental Build Time|
 |-----------|----------------------|
@@ -185,3 +185,4 @@ There we have it, due to the parallel nature of the mold linker we can get fast 
 
 [Mold](https://github.com/rui314/mold) is building out OSX support so in the future perhaps we get even faster native build times.
 
+Note, deno is a big project. For a typical full stack we project I'm seeing incremental build times between 2 and 3 seconds. Which is not bad or a 2019 Macbook Pro.
