@@ -17,6 +17,8 @@ When going full stack we development in rust I'd ideally like sub 1 second build
 
 ## Using the deno project as a benchmark
 
+[Deno](https://deno.land/) is a runtime for Javascript and Typescriot written in rust. It comes with a `.devcontainer` folder containing a Dockerfile which we will enhance for performance.
+
 ### Testing Mac OSX 2019 with rustc v1.56
 
 ![About My Mac](/mysetup.png)
@@ -37,7 +39,9 @@ ianpurton@MacBook-Pro deno % cargo build
 
 ### Debug = false
 
-Shave off another second
+If we set `debug = false` in our `Cargo.toml` we can improve the incrementl build times, however, in this case not by much.
+
+We shave off another second.
 
 ```bash
 ianpurton@MacBook-Pro deno % touch cli/cache.rs
@@ -46,34 +50,36 @@ ianpurton@MacBook-Pro deno % cargo build
     Finished dev [unoptimized] target(s) in 13.72s
 ```
 
+So that's our time to beat. ***13.72s***
 
 ## How we setup the devcontainer
 
+We need to move the existing `.devcontainer` setup to be docker compose based. This is so wec can add volumes for the target folder which sppeds up the build in docker considerably.
+
 ```yaml
+# .devcontainer/docker-compose.yml
 version: '3.4'
 services:
-
   development:
     build: 
       context: .
       dockerfile: Dockerfile
-    
     volumes:
       - ..:/vscode:delegated
       # For building dependencies always use a volume, you get waaaay better performance.
       - target:/vscode/target
-
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
-
     working_dir: /vscode
-
 volumes:
   # The volume for cargo build
   target:
 ```
 
 ```Dockerfile
+# .devcontainer/Dockerfile
+
+# Build stage to create our mold executable
 FROM ubuntu:20.04 as mold
 
 RUN apt-get update && \
@@ -91,6 +97,7 @@ ENV LDFLAGS="$LDFLAGS -Wl,-u,pthread_rwlock_wrlock"
 
 RUN make -C /mold -j$(nproc) EXTRA_LDFLAGS="$LDFLAGS"
 
+# Our rust container
 FROM mcr.microsoft.com/vscode/devcontainers/rust:0-1
 
 # Update to Rust 1.56.1
@@ -108,6 +115,7 @@ COPY --chown=vscode --from=mold /mold/mold-wrapper.so /usr/bin/mold-wrapper.so
 ```
 
 ```json
+// .devcontainer/devcontainer.json
 {
   "name": "Rust",
 	"dockerComposeFile": [
@@ -141,6 +149,8 @@ COPY --chown=vscode --from=mold /mold/mold-wrapper.so /usr/bin/mold-wrapper.so
 
 ## Docker build time
 
+Let's try an incremental build without mold.
+
 ```bash
 vscode ➜ /vscode (main ✗) $ touch cli/cache.rs 
 vscode ➜ /vscode (main ✗) $ cargo build
@@ -149,6 +159,8 @@ vscode ➜ /vscode (main ✗) $ cargo build
 ```
 
 ## Mold
+
+To use the mold linker prefix your cargo commands with `mold --run`
 
 ```bash
 vscode ➜ /vscode (main ✗) $ touch cli/cache.rs 
@@ -159,5 +171,7 @@ vscode ➜ /vscode (main ✗) $ mold --run cargo build
 
 ## Conclusion
 
-Mold is awesome.
+There we have it, due to the parallel nature of the mold linker we can get faster build times even under a virtualised docker environment.
+
+Mold is building out OSX support so in the future perhaps we get even faster native build times.
 
