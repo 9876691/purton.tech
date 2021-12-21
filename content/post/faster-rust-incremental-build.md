@@ -5,15 +5,15 @@ date: 2021-12-16T15:58:40Z
 
 ## Long story short
 
-By using Mold a new fast linker and docker volumes for the `target` folder I was able to get incremental build times quicker in a container than running native on a 2019 Macbook Pro.
+By using [Mold](https://github.com/rui314/mold) a new fast linker and docker volumes for the `target` folder I'm able to get incremental build times quicker in a container than running native on a 2019 Macbook Pro.
 
 ## Introduction
 
 I develop using VSCode devcontainer on a daily basis this means I have my development environment as code. All the tools I need are installed into the container.
 
-This is great for being able to quickly on board new developers or to bring a ne3 machine quickly up to speed but sacrifices some performance.
+This is great for being able to quickly on board new developers or to bring a new machine quickly up to speed but does sacrifice some performance.
 
-When going full stack we development in rust I'd ideally like sub 1 second build times. That makes me feel like I'm going fast.
+When doing full stack we development in rust I'd ideally like sub 1 second incremental build times. That makes me feel like I'm going fast.
 
 ## Using the deno project as a benchmark
 
@@ -23,13 +23,13 @@ When going full stack we development in rust I'd ideally like sub 1 second build
 
 ![About My Mac](/mysetup.png)
 
-I did `clone https://github.com/denoland/deno` and then a `cargo build`. Just for good measure another `cargo clean
+I did `clone https://github.com/denoland/deno` and then a `cargo build`. Just for good measure I run another another `cargo clean` then `cargo build` to take out any network downloads.
 
 1. `git clone https://github.com/denoland/deno`
 1. `cd deno`
 1. `cargo build`
 
-Now to test incremental build speeds I run `touch src/cache.rs` a file I picked at random. Now another `cargo build` and I'm getting incremental build times of about 1 minute. Which is not great.
+Now to test incremental build speeds I run `touch src/cache.rs` a file I picked at random. Now another `cargo build` and I'm getting incremental build times of 15 seconds. This is a standard rust installation on OSX.
 
 ```bash
 ianpurton@MacBook-Pro deno % cargo build       
@@ -54,7 +54,7 @@ So that's our time to beat. ***13.72s***
 
 ## How we setup the devcontainer
 
-We need to move the existing `.devcontainer` setup to be docker compose based. This is so wec can add volumes for the target folder which sppeds up the build in docker considerably.
+We need to move the existing `.devcontainer` setup to be docker compose based. This is so we can add a volume for the target folder which speeds up the build in docker considerably.
 
 ```yaml
 # .devcontainer/docker-compose.yml
@@ -109,7 +109,7 @@ RUN curl -fsSL https://deno.land/x/install/install.sh | sh
 
 RUN sudo mkdir -p /vscode/target && sudo chown vscode:vscode /vscode/target
 
-# mold
+# Copy over mold from our build stage
 COPY --chown=vscode --from=mold /mold/mold /usr/bin/mold
 COPY --chown=vscode --from=mold /mold/mold-wrapper.so /usr/bin/mold-wrapper.so
 ```
@@ -140,8 +140,6 @@ COPY --chown=vscode --from=mold /mold/mold-wrapper.so /usr/bin/mold-wrapper.so
     "mutantdino.resourcemonitor"
   ],
 
-  //"postCreateCommand": "git submodule update --init",
-
   "remoteUser": "vscode"
 }
 ```
@@ -149,7 +147,7 @@ COPY --chown=vscode --from=mold /mold/mold-wrapper.so /usr/bin/mold-wrapper.so
 
 ## Docker build time
 
-Let's try an incremental build without mold.
+Let's try an incremental build without mold. Here I'm running inside the `devcontainer` in vscode.
 
 ```bash
 vscode ➜ /vscode (main ✗) $ touch cli/cache.rs 
@@ -158,9 +156,11 @@ vscode ➜ /vscode (main ✗) $ cargo build
     Finished dev [unoptimized] target(s) in 26.10s
 ```
 
+As you would expect running in a container on a docker desktop is slower than native.
+
 ## Mold
 
-To use the mold linker prefix your cargo commands with `mold --run`
+To use the mold linker prefix your cargo commands with `mold --run`. Again I'm running in the vscode devcontainer.
 
 ```bash
 vscode ➜ /vscode (main ✗) $ touch cli/cache.rs 
@@ -169,9 +169,11 @@ vscode ➜ /vscode (main ✗) $ mold --run cargo build
     Finished dev [unoptimized] target(s) in 9.93s
 ```
 
+So now we are faster than running a standard OSX rust install. 
+
 ## Conclusion
 
-There we have it, due to the parallel nature of the mold linker we can get faster build times even under a virtualised docker environment.
+There we have it, due to the parallel nature of the mold linker we can get fast build times even under a virtualised docker environment.
 
 Mold is building out OSX support so in the future perhaps we get even faster native build times.
 
