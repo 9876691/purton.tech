@@ -1,0 +1,26 @@
+@import '../main.css';
+@import '../header.css';
+@import '../logo.css';
+@import '../pagination.css';
+@import '../post.css';
+@import '../syntax.css';
+@import '../variables.css';
+
+:root {
+    --accent: #00449e;
+    --background: rgb(255, 241, 224);
+    --color: rgba(0, 0, 0, 0.9);
+    --border-color: color-mod(var(--accent) alpha(90%));
+  }
+  
+  .pagination {
+      color: white;
+  }
+  
+  .logo {
+      color: white;
+  }
+  
+  .button {
+      color: black;
+  }
