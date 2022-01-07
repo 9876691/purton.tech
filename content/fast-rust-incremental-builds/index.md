@@ -1,9 +1,8 @@
 +++
 title = "Faster Rust Incremental Builds in Docker"
 date = 2021-12-16T15:58:40Z
+path = "/blog/faster-rust-incremental-builds"
 +++
-
-## Long story short
 
 By using [Mold](https://github.com/rui314/mold) a new fast linker and docker volumes for the `target` folder I'm able to get incremental build times quicker in a container than running native on a 2019 Macbook Pro.
 
